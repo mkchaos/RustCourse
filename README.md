@@ -4,7 +4,7 @@
 
 [Rust Course](https://course.rs/advance/)
 
-[Rust By Example]([Introduction - Rust By Example](https://doc.rust-lang.org/rust-by-example))
+[Rust By Example](https://doc.rust-lang.org/rust-by-example)
 
 ## Lessons
 
