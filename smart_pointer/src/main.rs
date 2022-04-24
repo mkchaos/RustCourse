@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use std::rc::{Rc, Weak};
 
 // 2 Assignment
