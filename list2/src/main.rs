@@ -32,53 +32,69 @@
 // History
 // rc
 
-struct ListHistory<T> {
-    list: List<T>
+struct ListHistory<T: Clone> {
+    histories: Vec<List<T>>,
 }
 
 // implement Drop trait and call methods
-impl<T> ListHistory<T> {
+impl<T: Clone> ListHistory<T> {
     pub fn new() -> Self {
-        todo!()
+        ListHistory {
+            histories: Vec::new(),
+        }
     }
 
     pub fn get_list_version(&self, version: u64) -> Option<List<T>> {
-        todo!()
+        self.histories.get(version as usize).map(|l| l.clone())
     }
 
-    pub fn prepend(&self, elem: T) -> List<T> {
-        todo!()
+    pub fn prepend(&mut self, elem: T) -> List<T> {
+        let list = self.current();
+        let list = list.prepend(elem);
+        self.histories.push(list.clone());
+        list
     }
 
-    pub fn tail(&self) -> List<T> {
-        todo!()
+    pub fn tail(&mut self) -> List<T> {
+        let list = self.current();
+        let list = list.tail();
+        self.histories.push(list.clone());
+        list
     }
 
     pub fn current(&self) -> List<T> {
-        todo!()
+        if self.histories.len() == 0 {
+            List::new()
+        } else {
+            self.get_list_version(self.histories.len() as u64 - 1u64).unwrap()
+        }
     }
 }
 
-impl<T> Drop for ListHistory<T> {
+impl<T: Clone> Drop for ListHistory<T> {
     fn drop(&mut self) {
-        todo!()
+        while let Some(list) = self.histories.pop() {
+            drop(list);
+        }
     }
 }
 
 use std::rc::Rc;
 
-pub struct List<T> {
+#[derive(Clone)]
+pub struct List<T> where T: Clone {
     head: Link<T>,
 }
 
 type Link<T> = Option<Rc<Node<T>>>;
 
+#[derive(Clone)]
 struct Node<T> {
     elem: T,
     next: Link<T>,
 }
 
-impl<T> List<T> {
+impl<T> List<T> where T: Clone {
     pub fn new() -> Self {
         List { head: None }
     }
@@ -111,7 +127,7 @@ pub struct Iter<'a, T> {
     next: Option<&'a Node<T>>,
 }
 
-impl<T> List<T> {
+impl<T: Clone> List<T> {
     pub fn iter(&self) -> Iter<'_, T> {
         Iter {
             next: self.head.as_deref(),
@@ -130,12 +146,10 @@ impl<'a, T> Iterator for Iter<'a, T> {
     }
 }
 
-
 // push pop
 // push_front push_back
 // pop_front pop_back
 // peek_front peek_back
-
 
 // 加这个 Drop 的初衷
 // 其实是 List 过长的话就会 栈溢出
@@ -154,7 +168,4 @@ impl<'a, T> Iterator for Iter<'a, T> {
 //     }
 // }
 
-
-fn main() {
-
-}
+fn main() {}
